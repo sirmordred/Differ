@@ -16,7 +16,6 @@ import java.nio.file.Paths;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
-import app.mordred.diffgenerator.Main;
 import app.mordred.diffgenerator.util.DiffToHtmlParameters;
 import j2html.tags.ContainerTag;
 import j2html.tags.Tag;
@@ -106,6 +105,7 @@ public abstract class HtmlBuilder {
 
 	ContainerTag createStyleTag() {
 		String styleSheet;
+		// TODO change it to use assets
 		try(InputStream cssInputStream =  Main.class.getResourceAsStream("/" + CSS_FILE)) {
 			styleSheet = IOUtils.toString(cssInputStream, StandardCharsets.UTF_8);
 		} catch (IOException e) {

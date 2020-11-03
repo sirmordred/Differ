@@ -9,6 +9,8 @@ import app.mordred.diffgenerator.impl.JavaDiffToHtmlGenerator;
 import app.mordred.diffgenerator.util.DiffToHtmlParameters;
 import app.mordred.diffgenerator.util.DiffToHtmlParameters.DiffType;
 
+import static app.mordred.diffgenerator.util.Constants.EXIT_CODE_OK;
+
 public class CronnDiffToHtml {
 
 	private static final String NEWLINE = System.lineSeparator();
@@ -28,7 +30,7 @@ public class CronnDiffToHtml {
 	public int generateDiffToHtmlReport(DiffToHtmlParameters params) throws IOException {
 		this.params = params;
 		int status = generateDiffToHtml();
-		return params.isOnlyReports() ? Main.EXIT_CODE_OK : status;
+		return params.isOnlyReports() ? EXIT_CODE_OK : status;
 	}
 
 	private int generateDiffToHtml() throws IOException {
@@ -53,12 +55,12 @@ public class CronnDiffToHtml {
 	}
 
 	private void printDirDiffResultMessage(int resultCode) {
-		System.out.println(resultCode == Main.EXIT_CODE_OK ?
+		System.out.println(resultCode == EXIT_CODE_OK ?
 				SYSOUT_MSG_DIRECTORIES_IDENTICAL : SYSOUT_MSG_DIRECTORIES_DIFFER);
 	}
 
 	private void printFileDiffResultMessage(int resultCode) {
-		System.out.println(resultCode == Main.EXIT_CODE_OK ?
+		System.out.println(resultCode == EXIT_CODE_OK ?
 				SYSOUT_MSG_FILES_IDENTICAL : SYSOUT_MSG_FILES_DIFFER);
 	}
 }

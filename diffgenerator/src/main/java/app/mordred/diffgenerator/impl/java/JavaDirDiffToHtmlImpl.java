@@ -1,6 +1,7 @@
 package app.mordred.diffgenerator.impl.java;
 
 import static app.mordred.diffgenerator.Main.EXIT_CODE_ERROR;
+import static app.mordred.diffgenerator.util.Constants.EXIT_CODE_ERROR;
 import static app.mordred.diffgenerator.util.DiffToHtmlParameters.DiffSide.LEFT;
 import static app.mordred.diffgenerator.util.DiffToHtmlParameters.DiffSide.RIGHT;
 
@@ -11,11 +12,11 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import app.mordred.diffgenerator.Main;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 
+import app.mordred.diffgenerator.DiffGenerator;
 import app.mordred.diffgenerator.html.DirectoryDiffHtmlBuilder;
 import app.mordred.diffgenerator.html.FileDiffHtmlBuilder;
 import app.mordred.diffgenerator.impl.DiffToHtmlResult;
@@ -60,7 +61,7 @@ public class JavaDirDiffToHtmlImpl extends JavaFileDiffToHtmlImpl {
 	private boolean fileNumberToDiffNotTooDifferent(ArrayList<File> leftSortedFilesAndDirs, ArrayList<File> rightSortedFilesAndDirs) {
 		int leftSize = leftSortedFilesAndDirs.size();
 		int rightSize = rightSortedFilesAndDirs.size();
-		if (leftSize > Main.getTooManyFilesAmount() || rightSize > Main.getTooManyFilesAmount()) {
+		if (leftSize > DiffGenerator.getTooManyFilesAmount() || rightSize > DiffGenerator.getTooManyFilesAmount()) {
 			int minSize = Math.min(leftSize, rightSize);
 			int maxSize = Math.max(leftSize, rightSize);
 			return minSize > maxSize / 2;

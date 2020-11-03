@@ -1,10 +1,14 @@
 package app.mordred.diffgenerator;
 
+import app.mordred.diffgenerator.util.Constants;
 import app.mordred.diffgenerator.util.DiffToHtmlParameters;
-import app.mordred.diffgenerator.util.FileHelper;
 import app.mordred.diffgenerator.util.cli.CliParser;
 import app.mordred.diffgenerator.util.cli.DiffToHtmlCommandLine;
 
+import static app.mordred.diffgenerator.util.Constants.EXIT_CODE_OK;
+import static app.mordred.diffgenerator.util.Constants.MAX_ALLOWED_FILESIZE_DIFFERENCE_IN_BYTES;
+import static app.mordred.diffgenerator.util.Constants.UNIFIED_CONTEXT_LINES;
+import static app.mordred.diffgenerator.util.Constants.workingDir;
 import static app.mordred.diffgenerator.util.cli.CliParser.OPT_DETECT_ENCODING;
 import static app.mordred.diffgenerator.util.cli.CliParser.OPT_IGNORE_LINE_ENDINGS;
 import static app.mordred.diffgenerator.util.cli.CliParser.OPT_IGNORE_SPACE_CHANGE;
@@ -17,19 +21,7 @@ import static app.mordred.diffgenerator.util.cli.CliParser.OPT_UNIFIED_CONTEXT;
 
 public class DiffGenerator {
 
-    public static final int EXIT_CODE_ERROR = 1;
-
-    public static final int EXIT_CODE_OK = 0;
-
-    private static final int UNIFIED_CONTEXT_LINES = 3;
-
-    public static final String PROGRAM_NAME = "cronn-diff-to-html";
-
-    private static String workingDir = FileHelper.getWorkingDir();
-
-    private static final Long MAX_ALLOWED_FILESIZE_DIFFERENCE_IN_BYTES = 500000l;
-
-    private Main() {}
+    private DiffGenerator() {}
 
     public static void main(String[] args) throws Exception {
         DiffToHtmlCommandLine cli;
@@ -65,7 +57,7 @@ public class DiffGenerator {
     }
 
     public static void setWorkingDir(String workingDir) {
-        Main.workingDir = workingDir;
+        Constants.workingDir = workingDir;
     }
 
     private static int tooManyFilesAmount = 1000;

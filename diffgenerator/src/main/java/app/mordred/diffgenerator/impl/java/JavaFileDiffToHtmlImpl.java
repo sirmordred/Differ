@@ -1,5 +1,7 @@
 package app.mordred.diffgenerator.impl.java;
 
+import static app.mordred.diffgenerator.util.Constants.EXIT_CODE_ERROR;
+import static app.mordred.diffgenerator.util.Constants.EXIT_CODE_OK;
 import static org.apache.commons.lang3.StringUtils.CR;
 
 import java.io.File;
@@ -9,7 +11,6 @@ import java.nio.file.Paths;
 
 import org.apache.commons.io.FileUtils;
 
-import app.mordred.diffgenerator.Main;
 import app.mordred.diffgenerator.html.FileDiffHtmlBuilder;
 import app.mordred.diffgenerator.impl.DiffToHtmlResult;
 import app.mordred.diffgenerator.impl.java.wrapper.JavaDiffUtils2HtmlWrapper;
@@ -33,7 +34,7 @@ public class JavaFileDiffToHtmlImpl {
 
 	protected DiffToHtmlParameters params;
 
-	int resultCode = Main.EXIT_CODE_OK;
+	int resultCode = EXIT_CODE_OK;
 
 	public JavaFileDiffToHtmlImpl(DiffToHtmlParameters params) {
 		this.params = params;
@@ -64,26 +65,26 @@ public class JavaFileDiffToHtmlImpl {
 
 	private FileDiffHtmlBuilder appendFileSizeTooBigToBuilder(FileDiffHtmlBuilder htmlBuilder) {
 		htmlBuilder.appendAttentionLine("Files differ but filesize difference too big to parse.");
-		resultCode = Main.EXIT_CODE_ERROR;
+		resultCode = EXIT_CODE_ERROR;
 		return  htmlBuilder;
 	}
 
 	private FileDiffHtmlBuilder appendIdenticalFilesToBuilder(FileDiffHtmlBuilder htmlBuilder, DiffToHtmlParameters params) {
 		htmlBuilder.appendInfoLine(createFilesIdenticalMessage(params));
-		resultCode = Main.EXIT_CODE_OK;
+		resultCode = EXIT_CODE_OK;
 		return htmlBuilder;
 	}
 
 	private FileDiffHtmlBuilder appendBinaryFilesDiffToBuilder(FileDiffHtmlBuilder htmlBuilder, DiffToHtmlParameters params) {
 		htmlBuilder.appendAttentionLine(createBinaryFilesDifferMessage(params));
-		resultCode = Main.EXIT_CODE_ERROR;
+		resultCode = EXIT_CODE_ERROR;
 		return htmlBuilder;
 	}
 
 	private FileDiffHtmlBuilder appendTextFilesDiffToBuilder(FileDiffHtmlBuilder htmlBuilder, DiffToHtmlParameters params)
 			throws IOException {
 		htmlBuilder = new JavaDiffUtils2HtmlWrapper().appendDiffToBuilder(htmlBuilder, params);
-		resultCode = Main.EXIT_CODE_ERROR;
+		resultCode = EXIT_CODE_ERROR;
 		return htmlBuilder;
 	}
 
