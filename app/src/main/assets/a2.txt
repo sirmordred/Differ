@@ -1,0 +1,8 @@
+ClassA.getValue(Map)
+ClassA.setName(String)
+ClassB.setClass()
+ClassB.value()
+ClassB.cancel()
+ClassB.start()
+ClassB.destroy()
+ClassB.pause()

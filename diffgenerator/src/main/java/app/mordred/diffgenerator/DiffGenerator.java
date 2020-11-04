@@ -60,20 +60,11 @@ public class DiffGenerator {
         } else {
             res = new JavaFileDiffToHtmlImpl(fixedUserParams).runDiffToHtml();
         }
-        // OLD METHOD Files.write(Paths.get(path), res.getHtml().getBytes());
         File outputFile = new File(fixedUserParams.getOutputPath());
-        FileWriter outputFileWriter = null;
-        try {
-            outputFileWriter = new FileWriter(outputFile);
-            outputFileWriter.write(res.getHtml());
-        } catch (IOException e) {
-            e.printStackTrace();
-            return EXIT_CODE_ERROR;
-        } finally {
-            if (outputFileWriter != null) {
-                outputFileWriter.close();
-            }
-        }
+        FileWriter outputFileWriter = new FileWriter(outputFile);
+        outputFileWriter.write(res.getHtml());
+        outputFileWriter.close();
+
         int status = res.getResultCode();
         if (fixedUserParams.getDiffType() == DiffToHtmlParameters.DiffType.DIRECTORIES) {
             Log.v(TAG, status == EXIT_CODE_OK ?

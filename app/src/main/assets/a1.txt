@@ -1,0 +1,3 @@
+ClassA.getName(String)
+ClassA.getValue()
+ClassA.setName(String)

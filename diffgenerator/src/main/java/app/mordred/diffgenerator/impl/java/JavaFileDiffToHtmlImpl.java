@@ -84,7 +84,7 @@ public class JavaFileDiffToHtmlImpl {
 	private FileDiffHtmlBuilder appendTextFilesDiffToBuilder(FileDiffHtmlBuilder htmlBuilder, DiffToHtmlParameters params)
 			throws IOException {
 		htmlBuilder = new JavaDiffUtils2HtmlWrapper().appendDiffToBuilder(htmlBuilder, params);
-		resultCode = EXIT_CODE_ERROR;
+		resultCode = EXIT_CODE_ERROR; //TODO change this return codes
 		return htmlBuilder;
 	}
 
