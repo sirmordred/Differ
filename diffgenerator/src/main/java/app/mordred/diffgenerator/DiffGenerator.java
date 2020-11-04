@@ -1,27 +1,18 @@
 package app.mordred.diffgenerator;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import app.mordred.diffgenerator.impl.DiffToHtmlResult;
 import app.mordred.diffgenerator.impl.JavaDiffToHtmlGenerator;
-import app.mordred.diffgenerator.util.Constants;
+import app.mordred.diffgenerator.impl.java.JavaDirDiffToHtmlImpl;
+import app.mordred.diffgenerator.impl.java.JavaFileDiffToHtmlImpl;
 import app.mordred.diffgenerator.util.DiffToHtmlParameters;
 
+import static app.mordred.diffgenerator.util.Constants.EXIT_CODE_ERROR;
 import static app.mordred.diffgenerator.util.Constants.EXIT_CODE_OK;
-import static app.mordred.diffgenerator.util.Constants.MAX_ALLOWED_FILESIZE_DIFFERENCE_IN_BYTES;
-import static app.mordred.diffgenerator.util.Constants.UNIFIED_CONTEXT_LINES;
-import static app.mordred.diffgenerator.util.Constants.workingDir;
-import static app.mordred.diffgenerator.util.cli.CliParser.OPT_DETECT_ENCODING;
-import static app.mordred.diffgenerator.util.cli.CliParser.OPT_IGNORE_LINE_ENDINGS;
-import static app.mordred.diffgenerator.util.cli.CliParser.OPT_IGNORE_SPACE_CHANGE;
-import static app.mordred.diffgenerator.util.cli.CliParser.OPT_IGNORE_UNIQUE_FILES;
-import static app.mordred.diffgenerator.util.cli.CliParser.OPT_IGNORE_WHITESPACES;
-import static app.mordred.diffgenerator.util.cli.CliParser.OPT_LINEWISE_DIFF;
-import static app.mordred.diffgenerator.util.cli.CliParser.OPT_MAX_ALLOWED_FILESIZE_DIFFERENCE;
-import static app.mordred.diffgenerator.util.cli.CliParser.OPT_ONLY_REPORTS;
-import static app.mordred.diffgenerator.util.cli.CliParser.OPT_UNIFIED_CONTEXT;
 
 public class DiffGenerator {
 
@@ -39,53 +30,48 @@ public class DiffGenerator {
 
     private DiffGenerator() {}
 
-    public static void main(String[] args) throws Exception {
+    private static DiffToHtmlParameters checkAndFixUserInput(DiffToHtmlParameters userParams) {
+        File inputLeftFile = new File(userParams.getInputLeftPath());
+        File inputRightFile = new File(userParams.getInputRightPath());
+        if (!inputLeftFile.exists() || !inputRightFile.exists()) {
+            // TODO add log here
+            return null;
+        }
+        if (inputLeftFile.isFile() && inputRightFile.isFile()) {
+            userParams.setDiffType(DiffToHtmlParameters.DiffType.FILES);
+        } else if (inputLeftFile.isDirectory() && inputRightFile.isDirectory()) {
+            userParams.setDiffType(DiffToHtmlParameters.DiffType.DIRECTORIES);
+        } else {
+            //TODO inform user
+            return null;
+        }
 
-        DiffToHtmlParameters parameters = DiffToHtmlParameters.builder()
-                .withDiffType(cli.isInputsFiles() ? DiffToHtmlParameters.DiffType.FILES : DiffToHtmlParameters.DiffType.DIRECTORIES)
-                .withInputLeftPath(cli.getInputLeft())
-                .withInputRightPath(cli.getInputRight())
-                .withOutputPath(cli.getOutput())
-                .withIgnoreUniqueFiles(cli.hasOption(OPT_IGNORE_UNIQUE_FILES))
-                .withIgnoreWhiteSpaces(cli.hasOption(OPT_IGNORE_WHITESPACES))
-                .withIgnoreSpaceChange(cli.hasOption(OPT_IGNORE_SPACE_CHANGE))
-                .withIgnoreLineEndings(cli.hasOption(OPT_IGNORE_LINE_ENDINGS))
-                .withDetectTextFileEncoding(cli.hasOption(OPT_DETECT_ENCODING))
-                .withOnlyReports(cli.hasOption(OPT_ONLY_REPORTS))
-                .withUnifiedContext(Integer
-                        .parseInt(cli.getOptionValue(OPT_UNIFIED_CONTEXT, Integer.toString(UNIFIED_CONTEXT_LINES))))
-                .withMaxAllowedDifferenceInByte(Long.parseLong(cli.getOptionValue(OPT_MAX_ALLOWED_FILESIZE_DIFFERENCE,
-                        Long.toString(MAX_ALLOWED_FILESIZE_DIFFERENCE_IN_BYTES))))
-                .withLinewiseDiff(cli.hasOption(OPT_LINEWISE_DIFF))
-                .withMaxAllowedFileInDir(/*TODO add value here*/)
-                .build();
-        int status = generateDiffToHtml(parameters);
-        System.exit(status);
-
-    }
-
-    public static String getWorkingDir() {
-        return workingDir;
-    }
-
-    public static void setWorkingDir(String workingDir) {
-        Constants.workingDir = workingDir;
+        return userParams;
     }
 
 
     public static int generateDiffToHtml(DiffToHtmlParameters params) throws IOException {
-        DiffToHtmlResult res = new JavaDiffToHtmlGenerator().generateHtml(params);
-        String path = params.getOutputPath();
+        DiffToHtmlParameters fixedUserParams = checkAndFixUserInput(params);
+        if (fixedUserParams == null) {
+            return EXIT_CODE_ERROR;
+        }
+        DiffToHtmlResult res;
+        if (fixedUserParams.getDiffType() == DiffToHtmlParameters.DiffType.DIRECTORIES) {
+            res = new JavaDirDiffToHtmlImpl(fixedUserParams).runDiffToHtml();
+        } else {
+            res = new JavaFileDiffToHtmlImpl(fixedUserParams).runDiffToHtml();
+        }
+        String path = fixedUserParams.getOutputPath();
         // TODO write it into application dir if its not specified
         Files.write(Paths.get(path), res.getHtml().getBytes());
         int status = res.getResultCode();
-        if (params.getDiffType() == DiffToHtmlParameters.DiffType.DIRECTORIES) {
+        if (fixedUserParams.getDiffType() == DiffToHtmlParameters.DiffType.DIRECTORIES) {
             System.out.println(status == EXIT_CODE_OK ?
                     SYSOUT_MSG_DIRECTORIES_IDENTICAL : SYSOUT_MSG_DIRECTORIES_DIFFER);
         } else {
             System.out.println(status == EXIT_CODE_OK ?
                     SYSOUT_MSG_FILES_IDENTICAL : SYSOUT_MSG_FILES_DIFFER);
         }
-        return params.isOnlyReports() ? EXIT_CODE_OK : status;
+        return fixedUserParams.isOnlyReports() ? EXIT_CODE_OK : status;
     }
 }

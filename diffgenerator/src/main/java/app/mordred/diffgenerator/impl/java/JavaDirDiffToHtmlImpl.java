@@ -101,11 +101,12 @@ public class JavaDirDiffToHtmlImpl extends JavaFileDiffToHtmlImpl {
 	}
 
 	private DiffToHtmlParameters createFileDiffParams(String fileLeftPath, String fileRightPath) {
-		return DiffToHtmlParameters.builder(params)
-				.withDiffType(DiffType.FILES)
+		DiffToHtmlParameters diffToHtmlParameters = DiffToHtmlParameters.builder(params)
 				.withInputLeftPath(fileLeftPath)
 				.withInputRightPath(fileRightPath)
 				.build();
+		diffToHtmlParameters.setDiffType(DiffType.FILES);
+		return diffToHtmlParameters;
 	}
 
 	private void makeDifferingFilesEntry(DirectoryDiffHtmlBuilder dirDiffHtmlBuilder, DiffToHtmlParameters diffParams) throws IOException {

@@ -11,7 +11,7 @@ public final class DiffToHtmlParameters {
 		LEFT, RIGHT
 	}
 
-	private final DiffType diffType;
+	private DiffType diffType;
 	private final String inputLeftPath;
 	private final String inputRightPath;
 	private final String outputPath;
@@ -29,11 +29,10 @@ public final class DiffToHtmlParameters {
 
 
 
-	private DiffToHtmlParameters(DiffType diffType, String inputLeftPath, String inputRightPath, String outputPath,
+	private DiffToHtmlParameters(String inputLeftPath, String inputRightPath, String outputPath,
 			String diffCommandLineAsString, boolean ignoreUniqueFiles, boolean ignoreWhiteSpaces,
 			boolean ignoreSpaceChange, boolean ignoreLineEndings, boolean detectTextFileEncoding, boolean onlyReports, int unifiedContext,
 			long maxAllowedDifferenceInByte, boolean linewiseDiff, int tooManyFilesAmount) {
-		this.diffType = diffType;
 		this.inputLeftPath = inputLeftPath;
 		this.inputRightPath = inputRightPath;
 		this.outputPath = outputPath;
@@ -52,7 +51,6 @@ public final class DiffToHtmlParameters {
 	}
 
 	public static class Builder {
-		private DiffType diffType;
 		private String inputLeftPath;
 		private String inputRightPath;
 		private String outputPath;
@@ -72,7 +70,6 @@ public final class DiffToHtmlParameters {
 		}
 
 		private Builder (DiffToHtmlParameters other) {
-			this.diffType = other.getDiffType();
 			this.inputLeftPath = other.getInputLeftPath();
 			this.inputRightPath = other.getInputRightPath();
 			this.outputPath = other.getOutputPath();
@@ -88,11 +85,6 @@ public final class DiffToHtmlParameters {
 			this.linewiseDiff = other.linewiseDiff;
 			this.tooManyFilesAmount = other.tooManyFilesAmount;
 
-		}
-
-		public Builder withDiffType(DiffType diffType) {
-			this.diffType = diffType;
-			return this;
 		}
 
 		public Builder withInputLeftPath(String inputLeftPath) {
@@ -161,7 +153,7 @@ public final class DiffToHtmlParameters {
 		}
 
 		public DiffToHtmlParameters build() {
-			return new DiffToHtmlParameters(diffType, inputLeftPath, inputRightPath, outputPath,
+			return new DiffToHtmlParameters(inputLeftPath, inputRightPath, outputPath,
 					diffCommandLineAsString, ignoreUniqueFiles, ignoreWhiteSpaces, ignoreSpaceChange, ignoreLineEndings,
 					detectTextFileEncoding, onlyReports, unifiedContext, maxAllowedDifferenceInByte, linewiseDiff, tooManyFilesAmount);
 		}
@@ -233,5 +225,9 @@ public final class DiffToHtmlParameters {
 
 	public int getMaxAllowedFileInDir() {
 		return tooManyFilesAmount;
+	}
+
+	public void setDiffType(DiffType diffType) {
+		this.diffType = diffType;
 	}
 }
