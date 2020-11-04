@@ -13,7 +13,19 @@
         android:id="@+id/button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Generate Diff" />
+        android:layout_marginBottom="16dp"
+        android:text="Generate and Save Diff" />
 
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:text="Generate and Show Diff" />
+
+    <app.mordred.diffgenerator.view.DiffView
+        android:id="@+id/customDiffView"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"/>
 
 </LinearLayout>

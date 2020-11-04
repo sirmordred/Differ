@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import app.mordred.diffgenerator.DiffGenerator;
 import app.mordred.diffgenerator.util.DiffToHtmlParameters;
+import app.mordred.diffgenerator.view.DiffView;
 
 import android.Manifest;
 import android.content.Context;
@@ -40,9 +41,9 @@ public class MainActivity extends AppCompatActivity {
 
         checkPermissions();
 
-        Button btn = findViewById(R.id.button);
+        Button btn1 = findViewById(R.id.button);
 
-        btn.setOnClickListener(new View.OnClickListener() {
+        btn1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 prepareDirs();
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                         .build();
 
                 try {
-                    int result = DiffGenerator.generateDiffToHtml(parameters);
+                    int result = DiffGenerator.generateAndSaveDiff(parameters);
                     Toast.makeText(getApplicationContext(), (result != 0 ? "SUCCESS" : "ERROR"),
                             Toast.LENGTH_LONG).show();
                 } catch (IOException e) {
@@ -62,6 +63,30 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        DiffView diffView = findViewById(R.id.customDiffView);
+
+        Button btn2 = findViewById(R.id.button2);
+        btn2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                prepareDirs();
+
+                DiffToHtmlParameters parameters = DiffToHtmlParameters.builder()
+                        .withInputLeftPath(exampleLeftFilePath)
+                        .withInputRightPath(exampleRightFilePath)
+                        .withOutputPath(exampleOutputFilePath) //TODO remove this, since its senseless
+                        .build();
+
+                try {
+                    String resultHtml = DiffGenerator.generateDiff(parameters);
+                    diffView.loadHtml(resultHtml);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
     }
 
     private void prepareDirs() {

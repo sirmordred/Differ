@@ -25,7 +25,8 @@ public class DiffGenerator {
 
     private DiffGenerator() {}
 
-    private static DiffToHtmlParameters checkAndFixUserInput(DiffToHtmlParameters userParams) {
+    private static DiffToHtmlParameters checkAndFixUserInput(DiffToHtmlParameters userParams,
+                                                             boolean checkOutput) {
         File inputLeftFile = new File(userParams.getInputLeftPath());
         File inputRightFile = new File(userParams.getInputRightPath());
         if (!inputLeftFile.exists() || !inputRightFile.exists()) {
@@ -41,16 +42,18 @@ public class DiffGenerator {
             return null;
         }
 
-        if (!userParams.getOutputPath().endsWith(".html")) {
-            userParams.setOutputPath(userParams.getOutputPath() + ".html");
+        if (checkOutput) {
+            if (!userParams.getOutputPath().endsWith(".html")) {
+                userParams.setOutputPath(userParams.getOutputPath() + ".html");
+            }
         }
 
         return userParams;
     }
 
 
-    public static int generateDiffToHtml(DiffToHtmlParameters params) throws IOException {
-        DiffToHtmlParameters fixedUserParams = checkAndFixUserInput(params);
+    public static int generateAndSaveDiff(DiffToHtmlParameters params) throws IOException {
+        DiffToHtmlParameters fixedUserParams = checkAndFixUserInput(params, true);
         if (fixedUserParams == null) {
             return EXIT_CODE_ERROR;
         }
@@ -74,5 +77,21 @@ public class DiffGenerator {
                     SYSOUT_MSG_FILES_IDENTICAL : SYSOUT_MSG_FILES_DIFFER);
         }
         return fixedUserParams.isOnlyReports() ? EXIT_CODE_OK : status;
+    }
+
+    public static String generateDiff(DiffToHtmlParameters params) throws IOException {
+        DiffToHtmlParameters fixedUserParams = checkAndFixUserInput(params, false);
+        if (fixedUserParams == null) {
+            return null;
+        }
+        DiffToHtmlResult res;
+        if (fixedUserParams.getDiffType() == DiffToHtmlParameters.DiffType.DIRECTORIES) {
+            res = new JavaDirDiffToHtmlImpl(fixedUserParams).runDiffToHtml();
+        } else {
+            res = new JavaFileDiffToHtmlImpl(fixedUserParams).runDiffToHtml();
+        }
+        //TODO also return status code somehow
+
+        return res.getHtml();
     }
 }
