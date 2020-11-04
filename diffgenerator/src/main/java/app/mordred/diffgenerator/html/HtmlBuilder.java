@@ -113,8 +113,4 @@ public abstract class HtmlBuilder {
 		}
 		return style(styleSheet);
 	}
-
-	public static void setUseSimpleFormatOnHtmls(boolean useSimpleFormatOnHtmls) {
-		HtmlBuilder.useSimpleFormatOnHtmls = useSimpleFormatOnHtmls;
-	}
 }

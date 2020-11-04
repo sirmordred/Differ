@@ -1,5 +1,6 @@
 package app.mordred.diffgenerator.util;
 
+import static app.mordred.diffgenerator.util.Constants.BYTE_BUFFER_SIZE_DETECT_BINARY;
 import static org.apache.commons.lang3.StringUtils.CR;
 import static org.apache.commons.lang3.StringUtils.LF;
 
@@ -12,8 +13,6 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 
 public class FileHelper {
-
-	private static final int BYTE_BUFFER_SIZE_DETECT_BINARY = 16000;
 
 	private FileHelper( ) {}
 	

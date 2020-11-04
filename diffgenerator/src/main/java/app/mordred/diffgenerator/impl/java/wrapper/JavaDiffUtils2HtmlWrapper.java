@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.difflib.DiffUtils;
+import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.Patch;
 import com.github.difflib.text.DiffRow;
@@ -57,28 +58,32 @@ public class JavaDiffUtils2HtmlWrapper {
 
 	private void appendDiffToBuilder(List<String> originalLines, List<String> revisedLines) {
 		Patch<String> diffPatches;
-		diffPatches = DiffUtils.diff(originalLines, revisedLines);
-		
-		List<AbstractDelta<String>> diffPatchDeltas = new ArrayList<>(diffPatches.getDeltas());
+		try {
+			diffPatches = DiffUtils.diff(originalLines, revisedLines);
 
-		if (!diffPatchDeltas.isEmpty()) {
-			List<AbstractDelta<String>> currentDeltas = new ArrayList<>();
-			AbstractDelta<String> currentDelta = diffPatchDeltas.get(0);
-			currentDeltas.add(currentDelta);
+			List<AbstractDelta<String>> diffPatchDeltas = new ArrayList<>(diffPatches.getDeltas());
 
-			for (int i = 1; i < diffPatchDeltas.size(); i++) {
-				AbstractDelta<String> nextDelta = diffPatchDeltas.get(i);
+			if (!diffPatchDeltas.isEmpty()) {
+				List<AbstractDelta<String>> currentDeltas = new ArrayList<>();
+				AbstractDelta<String> currentDelta = diffPatchDeltas.get(0);
+				currentDeltas.add(currentDelta);
 
-				if (nextDeltaIsTooCloseToCurrentDelta(currentDelta, nextDelta)) {
-					currentDeltas.add(nextDelta);
-				} else {
-					processDeltas(originalLines, currentDeltas);
-					currentDeltas.clear();
-					currentDeltas.add(nextDelta);
+				for (int i = 1; i < diffPatchDeltas.size(); i++) {
+					AbstractDelta<String> nextDelta = diffPatchDeltas.get(i);
+
+					if (nextDeltaIsTooCloseToCurrentDelta(currentDelta, nextDelta)) {
+						currentDeltas.add(nextDelta);
+					} else {
+						processDeltas(originalLines, currentDeltas);
+						currentDeltas.clear();
+						currentDeltas.add(nextDelta);
+					}
+					currentDelta = nextDelta;
 				}
-				currentDelta = nextDelta;
+				processDeltas(originalLines, currentDeltas);
 			}
-			processDeltas(originalLines, currentDeltas);
+		} catch (DiffException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -184,23 +189,27 @@ public class JavaDiffUtils2HtmlWrapper {
 			diffRowGeneratorBuilder = disableNormalization(diffRowGeneratorBuilder);
 			diffRowGeneratorBuilder = setInlineDiff(diffRowGeneratorBuilder, !params.isLinewiseDiff());
 			DiffRowGenerator diffGen = diffRowGeneratorBuilder.build();
-			
-			List<DiffRow> diffRows = diffGen.generateDiffRows(sourceLines, targetLines);
 
-			int origLinesCounterBefore = origLinesCounter;
+			List<DiffRow> diffRows;
+			try {
+				diffRows = diffGen.generateDiffRows(sourceLines, targetLines);
 
-			for (int i = 0; i < sourceLines.size() && i < diffRows.size(); i++) {
-				htmlBuilder.appendDeletionLine("-" + diffRows.get(i).getOldLine(), getOrigLineNr(origLinesStart),
-						getRevLineNr(revLinesStart));
-				origLinesCounter++;
+				int origLinesCounterBefore = origLinesCounter;
+
+				for (int i = 0; i < sourceLines.size() && i < diffRows.size(); i++) {
+					htmlBuilder.appendDeletionLine("-" + diffRows.get(i).getOldLine(), getOrigLineNr(origLinesStart),
+							getRevLineNr(revLinesStart));
+					origLinesCounter++;
+				}
+
+				for (int j = 0; j < targetLines.size() && j < diffRows.size(); j++) {
+					htmlBuilder.appendInsertionLine("+" + diffRows.get(j).getNewLine(),
+							origLinesStart + contextLinesCounter + origLinesCounterBefore, getRevLineNr(revLinesStart));
+					revLinesCounter++;
+				}
+			} catch (DiffException e) {
+				e.printStackTrace();
 			}
-
-			for (int j = 0; j < targetLines.size() && j < diffRows.size(); j++) {
-				htmlBuilder.appendInsertionLine("+" + diffRows.get(j).getNewLine(),
-						origLinesStart + contextLinesCounter + origLinesCounterBefore, getRevLineNr(revLinesStart));
-				revLinesCounter++;
-			}
-
 			break;
 		case DELETE:
 			for (String line : sourceLines) {

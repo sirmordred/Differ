@@ -14,21 +14,13 @@ import app.mordred.diffgenerator.util.DiffToHtmlParameters;
 
 import static app.mordred.diffgenerator.util.Constants.EXIT_CODE_ERROR;
 import static app.mordred.diffgenerator.util.Constants.EXIT_CODE_OK;
+import static app.mordred.diffgenerator.util.Constants.SYSOUT_MSG_DIRECTORIES_DIFFER;
+import static app.mordred.diffgenerator.util.Constants.SYSOUT_MSG_DIRECTORIES_IDENTICAL;
+import static app.mordred.diffgenerator.util.Constants.SYSOUT_MSG_FILES_DIFFER;
+import static app.mordred.diffgenerator.util.Constants.SYSOUT_MSG_FILES_IDENTICAL;
 import static app.mordred.diffgenerator.util.Constants.TAG;
 
 public class DiffGenerator {
-
-    private static final String NEWLINE = System.lineSeparator();
-
-    private static final String SYSOUT_MSG_DIRECTORIES_IDENTICAL = NEWLINE + "Directories are identical!";
-
-    private static final String SYSOUT_MSG_FILES_IDENTICAL = NEWLINE + "Files are identical!";
-
-    private static final String SYSOUT_MSG_DIRECTORIES_DIFFER = NEWLINE + "Directories differ!";
-
-    private static final String SYSOUT_MSG_FILES_DIFFER = NEWLINE + "Files differ!";
-
-    private static final String SYSOUT_MSG_OUTPUT_WRITTEN_TO = NEWLINE + "Output written to: file://";
 
     private DiffGenerator() {}
 
