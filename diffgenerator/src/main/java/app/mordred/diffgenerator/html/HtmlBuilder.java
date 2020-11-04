@@ -8,22 +8,18 @@ import static j2html.TagCreator.html;
 import static j2html.TagCreator.style;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 
+import app.mordred.diffgenerator.util.Constants;
 import app.mordred.diffgenerator.util.DiffToHtmlParameters;
 import j2html.tags.ContainerTag;
 import j2html.tags.Tag;
 
 @SuppressWarnings("rawtypes")
 public abstract class HtmlBuilder {
-
-	private static final String CSS_FILE = "diffToHtml.css";
 
 	protected static final String EMPTY_LINE_HEIGHT = "16";
 
@@ -104,13 +100,7 @@ public abstract class HtmlBuilder {
 	}
 
 	ContainerTag createStyleTag() {
-		String styleSheet;
-		// TODO change it to use assets
-		try(InputStream cssInputStream =  Main.class.getResourceAsStream("/" + CSS_FILE)) {
-			styleSheet = IOUtils.toString(cssInputStream, StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			styleSheet = "<!-- stylesheet " + CSS_FILE + " could not be loaded -->";
-		}
+		String styleSheet = Constants.rawCssStyle;
 		return style(styleSheet);
 	}
 }

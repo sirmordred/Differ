@@ -12,18 +12,14 @@ import static j2html.TagCreator.rawHtml;
 import static j2html.TagCreator.script;
 import static j2html.TagCreator.title;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 
+import app.mordred.diffgenerator.util.Constants;
 import app.mordred.diffgenerator.util.DiffToHtmlParameters;
-import app.mordred.diffgenerator.util.DiffToHtmlRuntimeException;
 import j2html.attributes.Attr;
 import j2html.tags.ContainerTag;
 import j2html.tags.Tag;
@@ -32,8 +28,6 @@ import j2html.tags.Tag;
 public class DirectoryDiffHtmlBuilder extends HtmlBuilder {
 
 	private static final String MSG_IDENTICAL_DIRS = "Directories are identical!";
-
-	private static final String JS_SCRIPTS_URI = "diffToHtmlJSScripts.js";
 
 	private static final String JS_FUNCTION_SHOW_ELEMENT = "showElement";
 
@@ -208,13 +202,7 @@ public class DirectoryDiffHtmlBuilder extends HtmlBuilder {
 	}
 
 	private Tag createJSScripts() {
-		String script;
-		try {
-			InputStream resourceAsStream = getClass().getResourceAsStream("/" + JS_SCRIPTS_URI);
-			script = IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8);
-		} catch (NullPointerException | IOException e) {
-			throw new DiffToHtmlRuntimeException("The resource " + JS_SCRIPTS_URI + " could not be loaded.", e);
-		}
+		String script = Constants.rawJs;
 		return script().attr(Attr.TYPE, "text/javascript").with(rawHtml(script));
 	}
 }
