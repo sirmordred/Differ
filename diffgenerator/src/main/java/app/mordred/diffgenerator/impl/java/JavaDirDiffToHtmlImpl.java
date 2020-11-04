@@ -1,6 +1,5 @@
 package app.mordred.diffgenerator.impl.java;
 
-import static app.mordred.diffgenerator.Main.EXIT_CODE_ERROR;
 import static app.mordred.diffgenerator.util.Constants.EXIT_CODE_ERROR;
 import static app.mordred.diffgenerator.util.DiffToHtmlParameters.DiffSide.LEFT;
 import static app.mordred.diffgenerator.util.DiffToHtmlParameters.DiffSide.RIGHT;
@@ -16,7 +15,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 
-import app.mordred.diffgenerator.DiffGenerator;
 import app.mordred.diffgenerator.html.DirectoryDiffHtmlBuilder;
 import app.mordred.diffgenerator.html.FileDiffHtmlBuilder;
 import app.mordred.diffgenerator.impl.DiffToHtmlResult;
@@ -41,7 +39,7 @@ public class JavaDirDiffToHtmlImpl extends JavaFileDiffToHtmlImpl {
 		ArrayList<File> leftSortedFilesAndDirs = getSortedFilesAndDirs(params.getInputLeftPath());
 		ArrayList<File> rightSortedFilesAndDirs = getSortedFilesAndDirs(params.getInputRightPath());
 
-		if (dirsToDiffNotEmpty(leftSortedFilesAndDirs, rightSortedFilesAndDirs) && fileNumberToDiffNotTooDifferent(leftSortedFilesAndDirs, rightSortedFilesAndDirs)) {
+		if (dirsToDiffNotEmpty(leftSortedFilesAndDirs, rightSortedFilesAndDirs) && fileNumberToDiffNotTooDifferent(leftSortedFilesAndDirs, rightSortedFilesAndDirs, params.getMaxAllowedFileInDir())) {
 			DirectoryDiffHtmlBuilder dirDiffHtmlBuilder = new DirectoryDiffHtmlBuilder(params);
 			traverseLeftDirectory(dirDiffHtmlBuilder, leftSortedFilesAndDirs);
 			traverseRightDirectory(dirDiffHtmlBuilder, rightSortedFilesAndDirs);
@@ -58,10 +56,10 @@ public class JavaDirDiffToHtmlImpl extends JavaFileDiffToHtmlImpl {
 		return leftSortedFilesAndDirs.size() > 2 && rightSortedFilesAndDirs.size() > 2;
 	}
 
-	private boolean fileNumberToDiffNotTooDifferent(ArrayList<File> leftSortedFilesAndDirs, ArrayList<File> rightSortedFilesAndDirs) {
+	private boolean fileNumberToDiffNotTooDifferent(ArrayList<File> leftSortedFilesAndDirs, ArrayList<File> rightSortedFilesAndDirs, int maxAllowedFileCountInDir) {
 		int leftSize = leftSortedFilesAndDirs.size();
 		int rightSize = rightSortedFilesAndDirs.size();
-		if (leftSize > DiffGenerator.getTooManyFilesAmount() || rightSize > DiffGenerator.getTooManyFilesAmount()) {
+		if (leftSize > maxAllowedFileCountInDir || rightSize > maxAllowedFileCountInDir) {
 			int minSize = Math.min(leftSize, rightSize);
 			int maxSize = Math.max(leftSize, rightSize);
 			return minSize > maxSize / 2;

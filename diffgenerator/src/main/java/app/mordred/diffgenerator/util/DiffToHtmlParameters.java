@@ -25,12 +25,14 @@ public final class DiffToHtmlParameters {
 	private final int unifiedContext;
 	private  final long maxAllowedDifferenceInByte;
 	private final boolean linewiseDiff;
+	private final int tooManyFilesAmount;
+
 
 
 	private DiffToHtmlParameters(DiffType diffType, String inputLeftPath, String inputRightPath, String outputPath,
 			String diffCommandLineAsString, boolean ignoreUniqueFiles, boolean ignoreWhiteSpaces,
 			boolean ignoreSpaceChange, boolean ignoreLineEndings, boolean detectTextFileEncoding, boolean onlyReports, int unifiedContext,
-			long maxAllowedDifferenceInByte, boolean linewiseDiff) {
+			long maxAllowedDifferenceInByte, boolean linewiseDiff, int tooManyFilesAmount) {
 		this.diffType = diffType;
 		this.inputLeftPath = inputLeftPath;
 		this.inputRightPath = inputRightPath;
@@ -45,6 +47,8 @@ public final class DiffToHtmlParameters {
 		this.unifiedContext = unifiedContext;
 		this.maxAllowedDifferenceInByte = maxAllowedDifferenceInByte;
 		this.linewiseDiff = linewiseDiff;
+		this.tooManyFilesAmount = tooManyFilesAmount;
+
 	}
 
 	public static class Builder {
@@ -62,6 +66,7 @@ public final class DiffToHtmlParameters {
 		private int unifiedContext = 3;
 		private long maxAllowedDifferenceInByte = 5000000;
 		private boolean linewiseDiff = false;
+		private int tooManyFilesAmount = 1000;
 
 		private Builder() {
 		}
@@ -81,6 +86,8 @@ public final class DiffToHtmlParameters {
 			this.unifiedContext = other.unifiedContext;
 			this.maxAllowedDifferenceInByte = other.maxAllowedDifferenceInByte;
 			this.linewiseDiff = other.linewiseDiff;
+			this.tooManyFilesAmount = other.tooManyFilesAmount;
+
 		}
 
 		public Builder withDiffType(DiffType diffType) {
@@ -148,10 +155,15 @@ public final class DiffToHtmlParameters {
 			return this;
 		}
 
+		public Builder withMaxAllowedFileInDir(boolean linewiseDiff) {
+			this.linewiseDiff = linewiseDiff;
+			return this;
+		}
+
 		public DiffToHtmlParameters build() {
 			return new DiffToHtmlParameters(diffType, inputLeftPath, inputRightPath, outputPath,
 					diffCommandLineAsString, ignoreUniqueFiles, ignoreWhiteSpaces, ignoreSpaceChange, ignoreLineEndings,
-					detectTextFileEncoding, onlyReports, unifiedContext, maxAllowedDifferenceInByte, linewiseDiff);
+					detectTextFileEncoding, onlyReports, unifiedContext, maxAllowedDifferenceInByte, linewiseDiff, tooManyFilesAmount);
 		}
 	}
 
@@ -217,5 +229,9 @@ public final class DiffToHtmlParameters {
 	
 	public boolean isLinewiseDiff() {
 		return linewiseDiff;
+	}
+
+	public int getMaxAllowedFileInDir() {
+		return tooManyFilesAmount;
 	}
 }

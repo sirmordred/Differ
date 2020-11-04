@@ -1,9 +1,13 @@
 package app.mordred.diffgenerator;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import app.mordred.diffgenerator.impl.DiffToHtmlResult;
+import app.mordred.diffgenerator.impl.JavaDiffToHtmlGenerator;
 import app.mordred.diffgenerator.util.Constants;
 import app.mordred.diffgenerator.util.DiffToHtmlParameters;
-import app.mordred.diffgenerator.util.cli.CliParser;
-import app.mordred.diffgenerator.util.cli.DiffToHtmlCommandLine;
 
 import static app.mordred.diffgenerator.util.Constants.EXIT_CODE_OK;
 import static app.mordred.diffgenerator.util.Constants.MAX_ALLOWED_FILESIZE_DIFFERENCE_IN_BYTES;
@@ -21,14 +25,21 @@ import static app.mordred.diffgenerator.util.cli.CliParser.OPT_UNIFIED_CONTEXT;
 
 public class DiffGenerator {
 
+    private static final String NEWLINE = System.lineSeparator();
+
+    private static final String SYSOUT_MSG_DIRECTORIES_IDENTICAL = NEWLINE + "Directories are identical!";
+
+    private static final String SYSOUT_MSG_FILES_IDENTICAL = NEWLINE + "Files are identical!";
+
+    private static final String SYSOUT_MSG_DIRECTORIES_DIFFER = NEWLINE + "Directories differ!";
+
+    private static final String SYSOUT_MSG_FILES_DIFFER = NEWLINE + "Files differ!";
+
+    private static final String SYSOUT_MSG_OUTPUT_WRITTEN_TO = NEWLINE + "Output written to: file://";
+
     private DiffGenerator() {}
 
     public static void main(String[] args) throws Exception {
-        DiffToHtmlCommandLine cli;
-        cli = new CliParser(workingDir).parse(args);
-        if(cli.isHelpOnly()) {
-            System.exit(EXIT_CODE_OK);
-        }
 
         DiffToHtmlParameters parameters = DiffToHtmlParameters.builder()
                 .withDiffType(cli.isInputsFiles() ? DiffToHtmlParameters.DiffType.FILES : DiffToHtmlParameters.DiffType.DIRECTORIES)
@@ -46,8 +57,9 @@ public class DiffGenerator {
                 .withMaxAllowedDifferenceInByte(Long.parseLong(cli.getOptionValue(OPT_MAX_ALLOWED_FILESIZE_DIFFERENCE,
                         Long.toString(MAX_ALLOWED_FILESIZE_DIFFERENCE_IN_BYTES))))
                 .withLinewiseDiff(cli.hasOption(OPT_LINEWISE_DIFF))
+                .withMaxAllowedFileInDir(/*TODO add value here*/)
                 .build();
-        int status = new CronnDiffToHtml().generateDiffToHtmlReport(parameters);
+        int status = generateDiffToHtml(parameters);
         System.exit(status);
 
     }
@@ -60,12 +72,20 @@ public class DiffGenerator {
         Constants.workingDir = workingDir;
     }
 
-    private static int tooManyFilesAmount = 1000;
 
-    public static int getTooManyFilesAmount() {
-        return tooManyFilesAmount;
-    }
-    static void setTooManyFilesAmount(int amount) {
-        tooManyFilesAmount = amount;
+    public static int generateDiffToHtml(DiffToHtmlParameters params) throws IOException {
+        DiffToHtmlResult res = new JavaDiffToHtmlGenerator().generateHtml(params);
+        String path = params.getOutputPath();
+        // TODO write it into application dir if its not specified
+        Files.write(Paths.get(path), res.getHtml().getBytes());
+        int status = res.getResultCode();
+        if (params.getDiffType() == DiffToHtmlParameters.DiffType.DIRECTORIES) {
+            System.out.println(status == EXIT_CODE_OK ?
+                    SYSOUT_MSG_DIRECTORIES_IDENTICAL : SYSOUT_MSG_DIRECTORIES_DIFFER);
+        } else {
+            System.out.println(status == EXIT_CODE_OK ?
+                    SYSOUT_MSG_FILES_IDENTICAL : SYSOUT_MSG_FILES_DIFFER);
+        }
+        return params.isOnlyReports() ? EXIT_CODE_OK : status;
     }
 }
