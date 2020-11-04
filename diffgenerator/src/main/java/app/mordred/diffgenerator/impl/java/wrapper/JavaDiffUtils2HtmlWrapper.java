@@ -18,7 +18,6 @@ import com.github.difflib.text.DiffRowGenerator.Builder;
 import app.mordred.diffgenerator.html.FileDiffHtmlBuilder;
 import app.mordred.diffgenerator.util.DiffToHtmlParameters;
 import app.mordred.diffgenerator.util.DiffToHtmlRuntimeException;
-import app.mordred.diffgenerator.util.FileHelper;
 
 public class JavaDiffUtils2HtmlWrapper {
 
@@ -84,15 +83,11 @@ public class JavaDiffUtils2HtmlWrapper {
 	}
 
 	private List<String> readAllLinesWithCorrectEncoding(String filePath) throws IOException {
-		if (!params.isDetectTextFileEncoding()) {
-			try {
-				return Files.readAllLines(Paths.get(filePath), DEFAULT_CHARSET);
-			} catch (CharacterCodingException e) {
-				throw new DiffToHtmlRuntimeException(
-						"File " + filePath + " cannot be read with default charset of this VM: " + DEFAULT_CHARSET, e);
-			}
-		} else {
-			return FileHelper.readAllLinesWithDetectedEncoding(filePath);
+		try {
+			return Files.readAllLines(Paths.get(filePath), DEFAULT_CHARSET);
+		} catch (CharacterCodingException e) {
+			throw new DiffToHtmlRuntimeException(
+					"File " + filePath + " cannot be read with default charset of this VM: " + DEFAULT_CHARSET, e);
 		}
 	}
 

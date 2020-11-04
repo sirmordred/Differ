@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import app.mordred.diffgenerator.impl.DiffToHtmlResult;
-import app.mordred.diffgenerator.impl.JavaDiffToHtmlGenerator;
 import app.mordred.diffgenerator.impl.java.JavaDirDiffToHtmlImpl;
 import app.mordred.diffgenerator.impl.java.JavaFileDiffToHtmlImpl;
 import app.mordred.diffgenerator.util.DiffToHtmlParameters;
