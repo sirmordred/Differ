@@ -3,6 +3,7 @@ package app.mordred.diffgenerator;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -40,6 +41,10 @@ public class DiffGenerator {
             return null;
         }
 
+        if (!userParams.getOutputPath().endsWith(".html")) {
+            userParams.setOutputPath(userParams.getOutputPath() + ".html");
+        }
+
         return userParams;
     }
 
@@ -55,9 +60,20 @@ public class DiffGenerator {
         } else {
             res = new JavaFileDiffToHtmlImpl(fixedUserParams).runDiffToHtml();
         }
-        String path = fixedUserParams.getOutputPath();
-        // TODO write it into application dir if its not specified
-        Files.write(Paths.get(path), res.getHtml().getBytes());
+        // OLD METHOD Files.write(Paths.get(path), res.getHtml().getBytes());
+        File outputFile = new File(fixedUserParams.getOutputPath());
+        FileWriter outputFileWriter = null;
+        try {
+            outputFileWriter = new FileWriter(outputFile);
+            outputFileWriter.write(res.getHtml());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return EXIT_CODE_ERROR;
+        } finally {
+            if (outputFileWriter != null) {
+                outputFileWriter.close();
+            }
+        }
         int status = res.getResultCode();
         if (fixedUserParams.getDiffType() == DiffToHtmlParameters.DiffType.DIRECTORIES) {
             Log.v(TAG, status == EXIT_CODE_OK ?

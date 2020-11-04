@@ -14,7 +14,7 @@ public final class DiffToHtmlParameters {
 	private DiffType diffType;
 	private final String inputLeftPath;
 	private final String inputRightPath;
-	private final String outputPath;
+	private String outputPath;
 	private final String diffCommandLineAsString;
 	private final boolean ignoreUniqueFiles;
 	private final boolean ignoreWhiteSpaces;
@@ -216,5 +216,9 @@ public final class DiffToHtmlParameters {
 
 	public void setDiffType(DiffType diffType) {
 		this.diffType = diffType;
+	}
+
+	public void setOutputPath(String outputPath) {
+		this.outputPath = outputPath;
 	}
 }
