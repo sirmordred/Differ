@@ -49,7 +49,7 @@ public class JavaDirDiffToHtmlImpl extends JavaFileDiffToHtmlImpl {
 			return new DiffToHtmlResult(dirDiffHtmlBuilder.toString(), resultCode);
 		} else {
 			FileDiffHtmlBuilder fileDiffHtmlBuilder = new FileDiffHtmlBuilder(params);
-            Log.e(TAG, tooManyDifferencesErrorMsg);
+			Log.e(TAG, tooManyDifferencesErrorMsg);
 			fileDiffHtmlBuilder.appendAttentionLine(tooManyDifferencesErrorMsg);
 			return new DiffToHtmlResult(fileDiffHtmlBuilder.toString(), EXIT_CODE_ERROR);
 		}

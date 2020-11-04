@@ -60,7 +60,6 @@ public class DiffGenerator {
         Files.write(Paths.get(path), res.getHtml().getBytes());
         int status = res.getResultCode();
         if (fixedUserParams.getDiffType() == DiffToHtmlParameters.DiffType.DIRECTORIES) {
-            System.out.println();
             Log.v(TAG, status == EXIT_CODE_OK ?
                     SYSOUT_MSG_DIRECTORIES_IDENTICAL : SYSOUT_MSG_DIRECTORIES_DIFFER);
         } else {
