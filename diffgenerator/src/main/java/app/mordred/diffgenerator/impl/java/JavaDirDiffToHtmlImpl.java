@@ -1,6 +1,9 @@
 package app.mordred.diffgenerator.impl.java;
 
+import android.util.Log;
+
 import static app.mordred.diffgenerator.util.Constants.EXIT_CODE_ERROR;
+import static app.mordred.diffgenerator.util.Constants.TAG;
 import static app.mordred.diffgenerator.util.DiffToHtmlParameters.DiffSide.LEFT;
 import static app.mordred.diffgenerator.util.DiffToHtmlParameters.DiffSide.RIGHT;
 
@@ -46,7 +49,7 @@ public class JavaDirDiffToHtmlImpl extends JavaFileDiffToHtmlImpl {
 			return new DiffToHtmlResult(dirDiffHtmlBuilder.toString(), resultCode);
 		} else {
 			FileDiffHtmlBuilder fileDiffHtmlBuilder = new FileDiffHtmlBuilder(params);
-			System.out.println(tooManyDifferencesErrorMsg);
+            Log.e(TAG, tooManyDifferencesErrorMsg);
 			fileDiffHtmlBuilder.appendAttentionLine(tooManyDifferencesErrorMsg);
 			return new DiffToHtmlResult(fileDiffHtmlBuilder.toString(), EXIT_CODE_ERROR);
 		}

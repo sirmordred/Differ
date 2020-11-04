@@ -1,5 +1,7 @@
 package app.mordred.diffgenerator;
 
+import android.util.Log;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,6 +14,7 @@ import app.mordred.diffgenerator.util.DiffToHtmlParameters;
 
 import static app.mordred.diffgenerator.util.Constants.EXIT_CODE_ERROR;
 import static app.mordred.diffgenerator.util.Constants.EXIT_CODE_OK;
+import static app.mordred.diffgenerator.util.Constants.TAG;
 
 public class DiffGenerator {
 
@@ -65,10 +68,11 @@ public class DiffGenerator {
         Files.write(Paths.get(path), res.getHtml().getBytes());
         int status = res.getResultCode();
         if (fixedUserParams.getDiffType() == DiffToHtmlParameters.DiffType.DIRECTORIES) {
-            System.out.println(status == EXIT_CODE_OK ?
+            System.out.println();
+            Log.v(TAG, status == EXIT_CODE_OK ?
                     SYSOUT_MSG_DIRECTORIES_IDENTICAL : SYSOUT_MSG_DIRECTORIES_DIFFER);
         } else {
-            System.out.println(status == EXIT_CODE_OK ?
+            Log.v(TAG, status == EXIT_CODE_OK ?
                     SYSOUT_MSG_FILES_IDENTICAL : SYSOUT_MSG_FILES_DIFFER);
         }
         return fixedUserParams.isOnlyReports() ? EXIT_CODE_OK : status;
