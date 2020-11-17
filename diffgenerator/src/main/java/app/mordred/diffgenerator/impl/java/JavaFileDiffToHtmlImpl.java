@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
@@ -41,8 +42,10 @@ public class JavaFileDiffToHtmlImpl {
 	}
 
 	public DiffToHtmlResult runDiffToHtml() throws IOException {
-		String html = appendFileDiffToBuilder(new FileDiffHtmlBuilder(params), params).toString();
-		return new DiffToHtmlResult(html, resultCode);
+		FileDiffHtmlBuilder fileDiffHtmlBuilder = appendFileDiffToBuilder(new FileDiffHtmlBuilder(params), params);
+		String html = fileDiffHtmlBuilder.toString();
+		List<String> rawDiff = fileDiffHtmlBuilder.getRawDiffLines();
+		return new DiffToHtmlResult(html, resultCode, rawDiff);
 	}
 
 	FileDiffHtmlBuilder appendFileDiffToBuilder(FileDiffHtmlBuilder htmlBuilder, DiffToHtmlParameters params)
@@ -83,7 +86,9 @@ public class JavaFileDiffToHtmlImpl {
 
 	private FileDiffHtmlBuilder appendTextFilesDiffToBuilder(FileDiffHtmlBuilder htmlBuilder, DiffToHtmlParameters params)
 			throws IOException {
-		htmlBuilder = new JavaDiffUtils2HtmlWrapper().appendDiffToBuilder(htmlBuilder, params);
+		JavaDiffUtils2HtmlWrapper javaDiffUtils2HtmlWrapper = new JavaDiffUtils2HtmlWrapper();
+		htmlBuilder = javaDiffUtils2HtmlWrapper.appendDiffToBuilder(htmlBuilder, params);
+		htmlBuilder.setRawDiffLines(javaDiffUtils2HtmlWrapper.getRawDiff());
 		resultCode = EXIT_CODE_ERROR; //TODO change this return codes
 		return htmlBuilder;
 	}

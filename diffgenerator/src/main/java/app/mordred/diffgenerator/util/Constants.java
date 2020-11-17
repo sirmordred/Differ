@@ -1,8 +1,15 @@
 package app.mordred.diffgenerator.util;
 
+import android.graphics.Color;
+
 public class Constants {
 
     public static final String TAG = "DiffGenerator";
+
+    public static final int DELETION_COLOR = Color.parseColor("#ffeef0");
+    public static final int INSERTION_COLOR = Color.parseColor("#e5ffee");
+    public static final int CHANGE_DELETION_COLOR = Color.parseColor("#ffb8c0");
+    public static final int CHANGE_INSERTION_COLOR = Color.parseColor("#a9f2c0");
 
     public static final int EXIT_CODE_ERROR = 1;
 

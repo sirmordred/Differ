@@ -5,8 +5,8 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import app.mordred.diffgenerator.impl.DiffToHtmlResult;
 import app.mordred.diffgenerator.impl.java.JavaDirDiffToHtmlImpl;
@@ -93,5 +93,31 @@ public class DiffGenerator {
         //TODO also return status code somehow
 
         return res.getHtml();
+    }
+
+    public static List<String> generateRawDiff(DiffToHtmlParameters params) {
+        DiffToHtmlParameters fixedUserParams = checkAndFixUserInput(params, false);
+        if (fixedUserParams == null) {
+            return null;
+        }
+        DiffToHtmlResult res;
+        if (fixedUserParams.getDiffType() == DiffToHtmlParameters.DiffType.DIRECTORIES) {
+            try {
+                res = new JavaDirDiffToHtmlImpl(fixedUserParams).runDiffToHtml();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return new ArrayList<>();
+            }
+        } else {
+            try {
+                res = new JavaFileDiffToHtmlImpl(fixedUserParams).runDiffToHtml();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return new ArrayList<>();
+            }
+        }
+        //TODO also return status code somehow
+
+        return res.getRawDiff();
     }
 }

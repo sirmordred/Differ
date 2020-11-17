@@ -10,6 +10,7 @@ import static j2html.TagCreator.style;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -46,6 +47,16 @@ public abstract class HtmlBuilder {
 	protected static boolean useSimpleFormatOnHtmls = false;
 
 	protected String outputDirForRelativePaths = null;
+
+	private List<String> rawDiffLines;
+
+	public List<String> getRawDiffLines() {
+		return rawDiffLines;
+	}
+
+	public void setRawDiffLines(List<String> rawDiffLines) {
+		this.rawDiffLines = rawDiffLines;
+	}
 
 	protected abstract Tag createHead();
 

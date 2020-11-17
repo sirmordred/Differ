@@ -26,7 +26,11 @@ public class JavaDiffUtils2HtmlWrapper {
 	public static final String DELETION_CLOSE_TAG = "###DELETION_CLOSE_a6af1ef424e74b97a3a2853df441be2a###";
 	public static final String INSERTION_OPEN_TAG = "###INSERTION_OPEN_b20a6ec4c51d45499a527bbe19628281###";
 	public static final String INSERTION_CLOSE_TAG = "###INSERTION_CLOSE_594bd9ee828743ef95eb721da47ad406###";
-	
+	public static final String CHANGE_DEL_TAG = "###CHG_DEL_98345dc8aa341f41289278324023e4b567###";
+	public static final String CHANGE_INS_TAG = "###CHG_INS_45445dc8aa341f41289278324023e8g564###";
+	public static final String DEL_TAG = "###DEL_91465dc8aa341f41289278324023e0f264###";
+	public static final String INS_TAG = "###INS_04576dc8aa341f41289278324023e5twu4###";
+
 	private static final Charset DEFAULT_CHARSET = Charset.defaultCharset();
 	private FileDiffHtmlBuilder htmlBuilder = null;
 	private int contextLinesCounter = 0;
@@ -43,7 +47,7 @@ public class JavaDiffUtils2HtmlWrapper {
 	private int initialPostionInHtmlBuilder;
 	private DiffToHtmlParameters params;
 
-
+	private List<String> rawDiff = new ArrayList<>();
 
 	public FileDiffHtmlBuilder appendDiffToBuilder(FileDiffHtmlBuilder htmlBuilder, DiffToHtmlParameters params)
 			throws IOException {
@@ -54,6 +58,10 @@ public class JavaDiffUtils2HtmlWrapper {
 		List<String> revisedLines = readAllLinesWithCorrectEncoding(params.getInputRightPath());
 		appendDiffToBuilder(originalLines, revisedLines);
 		return htmlBuilder;
+	}
+
+	public List<String> getRawDiff() {
+		return rawDiff;
 	}
 
 	private void appendDiffToBuilder(List<String> originalLines, List<String> revisedLines) {
@@ -199,12 +207,14 @@ public class JavaDiffUtils2HtmlWrapper {
 				for (int i = 0; i < sourceLines.size() && i < diffRows.size(); i++) {
 					htmlBuilder.appendDeletionLine("-" + diffRows.get(i).getOldLine(), getOrigLineNr(origLinesStart),
 							getRevLineNr(revLinesStart));
+					rawDiff.add(CHANGE_DEL_TAG + "-" + diffRows.get(i).getOldLine());
 					origLinesCounter++;
 				}
 
 				for (int j = 0; j < targetLines.size() && j < diffRows.size(); j++) {
 					htmlBuilder.appendInsertionLine("+" + diffRows.get(j).getNewLine(),
 							origLinesStart + contextLinesCounter + origLinesCounterBefore, getRevLineNr(revLinesStart));
+					rawDiff.add(CHANGE_INS_TAG + "+" + diffRows.get(j).getNewLine());
 					revLinesCounter++;
 				}
 			} catch (DiffException e) {
@@ -214,12 +224,14 @@ public class JavaDiffUtils2HtmlWrapper {
 		case DELETE:
 			for (String line : sourceLines) {
 				htmlBuilder.appendDeletionLine("-" + line, getOrigLineNr(origLinesStart), getRevLineNr(revLinesStart));
+				rawDiff.add(DEL_TAG + "-" + line);
 				origLinesCounter++;
 			}
 			break;
 		case INSERT:
 			for (String line : targetLines) {
 				htmlBuilder.appendInsertionLine("+" + line, getOrigLineNr(origLinesStart), getRevLineNr(revLinesStart));
+				rawDiff.add(INS_TAG + "+" + line);
 				revLinesCounter++;
 			}
 			break;
